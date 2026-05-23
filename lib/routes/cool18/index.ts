@@ -13,6 +13,8 @@ type PageDataItem = {
     subject: string;
     dateline: string;
     type: string;
+    rootid: string;
+    uptid: string;
 };
 
 type PostType = 'home' | 'gold' | 'threadsearch' | 'search';
@@ -73,14 +75,17 @@ function extractHomeList($: CheerioAPI, rootUrl: string, limit: number): DataIte
 
         const pageData: PageDataItem[] = JSON.parse(match[1]);
 
-        return pageData.slice(0, limit).map((item) => ({
-            title: item.subject,
-            link: `${rootUrl}?app=forum&act=threadview&tid=${item.tid}`,
-            pubDate: parseDate(item.dateline, 'MM/DD/YY'),
-            author: item.username,
-            category: item.type ? [item.type] : [],
-            description: '',
-        }));
+        return pageData
+            .filter((item) => item.rootid === '0' && item.uptid === '0')
+            .slice(0, limit)
+            .map((item) => ({
+                title: item.subject,
+                link: `${rootUrl}?app=forum&act=threadview&tid=${item.tid}`,
+                pubDate: parseDate(item.dateline, 'MM/DD/YY'),
+                author: item.username,
+                category: item.type ? [item.type] : [],
+                description: '',
+            }));
     } catch {
         return [];
     }
@@ -90,7 +95,7 @@ function extractHomeList($: CheerioAPI, rootUrl: string, limit: number): DataIte
  * 从 HTML 列表中提取数据
  */
 function extractHtmlList($: CheerioAPI, rootUrl: string, limit: number): DataItem[] {
-    const selector = '#d_list ul li, #thread_list li, .t_l .t_subject, .post-list.thread-list li';
+    const selector = '#d_list > ul > li.l-m1, #thread_list > li.l-m1, .post-list.thread-list li.l-m1, .t_l .t_subject';
     const elements = $(selector);
 
     return elements

@@ -7,7 +7,7 @@ import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 import timezone from '@/utils/timezone';
 
-const host = 'https://www.sehuatang.net/';
+const host = config.sehuatang.baseUrl;
 
 const forumIdMaps = {
     // 原创 BT 电影
@@ -42,7 +42,7 @@ const forumIdMaps = {
 export const route: Route = {
     path: ['/bt/:subforumid?', '/picture/:subforumid', '/:subforumid?/:type?', '/:subforumid?', ''],
     name: 'Forum',
-    maintainers: ['qiwihui', 'junfengP', 'nczitzk'],
+    maintainers: ['qiwihui', 'junfengP', 'nczitzk', 'wizos'],
     handler,
     features: {
         nsfw: true,
@@ -80,7 +80,7 @@ async function handler(ctx) {
     const subformId = subformName in forumIdMaps ? forumIdMaps[subformName] : subformName;
     const type = ctx.req.param('type');
     const typefilter = type ? `&filter=typeid&typeid=${type}` : '';
-    const link = `${host}forum.php?mod=forumdisplay&orderby=dateline&fid=${subformId}${typefilter}`;
+    const link = `${host}/forum.php?mod=forumdisplay&orderby=dateline&fid=${subformId}${typefilter}`;
     const headers = {
         Cookie: `_safe=${await getSafeId()};`,
     };
@@ -98,7 +98,7 @@ async function handler(ctx) {
             const hasCategory = item.find('th em a').length;
             return {
                 title: `${hasCategory ? `[${item.find('th em a').text()}]` : ''} ${item.find('a.xst').text()}`,
-                link: host + item.find('a.xst').attr('href'),
+                link: host + '/' + item.find('a.xst').attr('href'),
                 pubDate: parseDate(item.find('td.by').find('em span span').attr('title')),
                 author: item.find('td.by cite a').first().text(),
             };

@@ -55,7 +55,7 @@ async function handler(ctx) {
         description: `V2EX-${title}`,
         item: data.map((item) => ({
             title: item.title,
-            description: `${item.member.username}: ${item.content_rendered}`,
+            description: item.content_rendered,
             content: { text: item.content, html: item.content_rendered },
             pubDate: parseDate(item.created, 'X'),
             link: item.url,

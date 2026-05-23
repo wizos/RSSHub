@@ -2,11 +2,18 @@ import * as cheerio from 'cheerio';
 
 export const baseUrl = 'https://www.t66y.com';
 
-const killRedircdn = (originUrl) => {
-    const decodeStr = /.*\?http/g;
-    const decodeSig = /______/g;
-    const htmlSuffix = '&z';
-    return originUrl.replaceAll(decodeStr, 'http').replaceAll(decodeSig, '.').replace(htmlSuffix, '');
+const killViidii = (originUrl: string) => {
+    if (!originUrl.includes('viidii')) {
+        return originUrl;
+    }
+    return originUrl.replace(/.*\?http/g, 'http').replace(/______/g, '.').replace(/&amp;z/, '').replace(/&z/, '').replace('return false', '');
+};
+
+const killRedircdn = (originUrl: string) => {
+    if (!originUrl.includes('redircdn')) {
+        return originUrl;
+    }
+    return originUrl.replace(/.*\?http/g, 'http').replace(/______/g, '.').replace(/&amp;z/, '').replace(/&z/, '').replace('return false', '');
 };
 
 export const parseContent = (htmlString) => {
@@ -38,17 +45,22 @@ export const parseContent = (htmlString) => {
         $ele.removeAttr('iyl-data');
     });
 
-    // Handle input tag
-    // images = $('input');
-    // for (const image of images) {
-    //     $(image).replaceWith(`<img src="${$(image).attr('ess-data')}" />`);
-    // }
+    // Handle input tag (convert to img)
+    content.find('input').each((_, ele) => {
+        const $ele = $(ele);
+        const essData = $ele.attr('ess-data');
+        if (essData) {
+            $ele.replaceWith(`<img src="${essData}" />`);
+        }
+    });
 
     // Handle links
     content.find('a').each((_, ele) => {
         const $ele = $(ele);
         const href = $ele.attr('href');
-        if (href?.includes('redircdn')) {
+        if (href?.includes('viidii')) {
+            $ele.attr('href', killViidii(href));
+        } else if (href?.includes('redircdn')) {
             $ele.attr('href', killRedircdn(href));
         }
     });

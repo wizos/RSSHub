@@ -11,7 +11,7 @@ const json = (data: Data) => {
         title: data.title || 'RSSHub',
         home_page_url: data.link || 'https://docs.rsshub.app',
         feed_url: data.feedLink,
-        description: `${data.description || data.title} - Powered by RSSHub`,
+        description: `${data.description || data.title}`,
         icon: data.image,
         authors: typeof data.author === 'string' ? [{ name: data.author }] : data.author,
         language: data.language || 'zh-cn',
@@ -34,14 +34,14 @@ const json = (data: Data) => {
                 item.attachments ||
                 (item.enclosure_url
                     ? [
-                          {
-                              url: item.enclosure_url,
-                              mime_type: item.enclosure_type,
-                              title: item.enclosure_title,
-                              size_in_bytes: item.enclosure_length,
-                              duration_in_seconds: item.itunes_duration,
-                          },
-                      ]
+                        {
+                            url: item.enclosure_url,
+                            mime_type: item.enclosure_type,
+                            title: item.enclosure_title,
+                            size_in_bytes: item.enclosure_length,
+                            duration_in_seconds: item.itunes_duration,
+                        },
+                    ]
                     : undefined),
             _extra: item._extra || undefined,
         })),

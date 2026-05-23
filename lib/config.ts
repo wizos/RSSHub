@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { ofetch } from 'ofetch';
 
 type ConfigEnvKeys =
-    // App config
+// App config
     | 'DISALLOW_ROBOT'
     | 'ENABLE_CLUSTER'
     | 'IS_PACKAGE'
@@ -188,6 +188,7 @@ type ConfigEnvKeys =
     | 'SDO_FF14RISINGSTONES'
     | 'SDO_UA'
     | 'SECURITY_KEY'
+    | 'SEHUATANG_BASE_URL'
     | 'SIS001_BASE_URL'
     | 'SKEB_BEARER_TOKEN'
     | 'SORRYCC_COOKIES'
@@ -791,8 +792,8 @@ const calculateValue = () => {
         proxyUri: envs.PROXY_URI,
         proxyUris: envs.PROXY_URIS
             ? envs.PROXY_URIS.split(',')
-                  .map((uri) => uri.trim())
-                  .filter(Boolean)
+                .map((uri) => uri.trim())
+                .filter(Boolean)
             : undefined,
         proxy: {
             protocol: envs.PROXY_PROTOCOL,
@@ -1086,6 +1087,7 @@ const calculateValue = () => {
         },
         sehuatang: {
             cookie: envs.SEHUATANG_COOKIE,
+            baseUrl: envs.SEHUATANG_BASE_URL || 'https://www.sehuatang.net',
         },
         scboy: {
             token: envs.SCBOY_BBS_TOKEN,

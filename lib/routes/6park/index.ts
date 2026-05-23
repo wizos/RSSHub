@@ -42,7 +42,7 @@ async function handler(ctx) {
 
     const $ = load(response.data);
 
-    let items = $('#d_list ul li, #thread_list li, .t_l .t_subject')
+    let items = $('#d_list > ul > li, #thread_list li, .t_l .t_subject')
         .toArray()
         .slice(0, limit)
         .map((item) => {

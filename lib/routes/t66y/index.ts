@@ -4,6 +4,7 @@ import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
 import { parseDate } from '@/utils/parse-date';
+import timezone from '@/utils/timezone';
 
 import { baseUrl, parseContent } from './utils';
 
@@ -22,7 +23,7 @@ export const route: Route = {
         nsfw: true,
     },
     name: '分区帖子',
-    maintainers: ['zhboner'],
+    maintainers: ['zhboner', 'wizos'],
     handler,
     description: `> 注意：并非所有的分区都有子类型，可以参考成人文学交流区的 \`古典武侠\` 这一子类型。
 
@@ -57,6 +58,8 @@ const SEARCH_NAMES = {
 
 const DEFAULT_SEARCH_TYPE = 'today';
 
+const EXCLUDE_TITLE = /兲朝浮世绘|微视野|微博谈|老斯基财经|\[图说\]|博海拾贝|韩漫|每日动图|論壇安全提示/;
+
 async function handler(ctx) {
     const id = ctx.req.param('id');
     const type = (Number.parseInt(ctx.req.param('type')) || -999).toString();
@@ -82,21 +85,35 @@ async function handler(ctx) {
                 .trim();
             const a = tal.find('h3 a');
             const td3 = element.find('td:nth-child(3)');
+            const tsSpan = td3.find('span[data-timestamp]');
+            const tsRaw = tsSpan.attr('data-timestamp');
+            const tsData = tsSpan.data('timestamp');
+            const tsStr = String(tsRaw ?? tsData ?? '');
 
             return {
                 title: `${catalog} ${a.text()}`,
                 link: `${baseUrl}/${a.attr('href')}`,
                 author: td3.find('a').text(),
-                pubDate: parseDate(String(td3.find('span[data-timestamp]').data('timestamp')).slice(0, -1), 'X'),
+                pubDate: tsStr && !Number.isNaN(Number(tsStr)) ? timezone(parseDate(tsStr, 'X'), +8) : undefined,
             };
-        });
+        })
+        .filter((item) => item.title && !EXCLUDE_TITLE.test(item.title));
 
     const out = await Promise.all(
         list.map((item) =>
             cache.tryGet(item.link, async () => {
                 const { data: response } = await got(item.link);
 
+                const $detail = cheerio.load(response);
                 item.description = parseContent(response);
+
+                // If pubDate was not available from the list page, get it from the detail page
+                if (!item.pubDate) {
+                    const tsAttr = $detail('div.tipad span[data-timestamp]').first().attr('data-timestamp');
+                    if (tsAttr && !Number.isNaN(Number(tsAttr))) {
+                        item.pubDate = timezone(parseDate(tsAttr, 'X'), +8);
+                    }
+                }
 
                 return item;
             })
