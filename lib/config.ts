@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { ofetch } from 'ofetch';
 
 type ConfigEnvKeys =
-// App config
+    // App config
     | 'DISALLOW_ROBOT'
     | 'ENABLE_CLUSTER'
     | 'IS_PACKAGE'
@@ -183,6 +183,8 @@ type ConfigEnvKeys =
     | 'SARABA1ST_COOKIE'
     | 'SARABA1ST_HOST'
     | 'SEHUATANG_COOKIE'
+    | 'SEX8_COOKIE'
+    | 'SEX8_BASE_URL'
     | 'SCBOY_BBS_TOKEN'
     | 'SCIHUB_HOST'
     | 'SDO_FF14RISINGSTONES'
@@ -586,6 +588,10 @@ export type Config = {
     sehuatang: {
         cookie?: string;
     };
+    sex8: {
+        cookie?: string;
+        baseUrl?: string;
+    };
     scboy: {
         token?: string;
     };
@@ -792,8 +798,8 @@ const calculateValue = () => {
         proxyUri: envs.PROXY_URI,
         proxyUris: envs.PROXY_URIS
             ? envs.PROXY_URIS.split(',')
-                .map((uri) => uri.trim())
-                .filter(Boolean)
+                  .map((uri) => uri.trim())
+                  .filter(Boolean)
             : undefined,
         proxy: {
             protocol: envs.PROXY_PROTOCOL,
@@ -1088,6 +1094,10 @@ const calculateValue = () => {
         sehuatang: {
             cookie: envs.SEHUATANG_COOKIE,
             baseUrl: envs.SEHUATANG_BASE_URL || 'https://www.sehuatang.net',
+        },
+        sex8: {
+            cookie: envs.SEX8_COOKIE,
+            baseUrl: envs.SEX8_BASE_URL || 'https://www.sex8.cc',
         },
         scboy: {
             token: envs.SCBOY_BBS_TOKEN,
