@@ -42,3 +42,5 @@ yarn.lock
 yarn-error.log
 
 dist-container
+/.arts/
+/.codeartsdoer/

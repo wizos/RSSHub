@@ -134,12 +134,39 @@ async function handler(ctx) {
                 content('.ads, .tips').remove();
 
                 content('ignore_js_op').each((_, el) => {
-                    const img = content(el).find('img');
-                    const originalSrc = img.attr('data-original');
-                    const fallbackSrc = img.attr('src');
-                    // 判断是否有 data-original 属性，若有则使用其值，否则使用 src 属性值
-                    const imgSrc = originalSrc || fallbackSrc;
-                    content(el).replaceWith(`<img src="${imgSrc}">`);
+                    const $el = content(el);
+
+                    // // 优先处理视频链接
+                    // const videoLink = $el.find('a[href*=".mp4"], a[href*=".webm"], a[href*=".m4v"]').first();
+                    // const videoHref = videoLink.attr('href');
+                    // if (videoHref) {
+                    //     content(el).replaceWith(`<video controls style="max-width: 100%;" src="${videoHref}"></video>`);
+                    //     return;
+                    // }
+                    //
+                    // // 处理图片
+                    // const img = $el.find('img');
+                    // const originalSrc = img.attr('data-original');
+                    // const fallbackSrc = img.attr('src');
+                    // const imgSrc = originalSrc || fallbackSrc;
+                    // if (imgSrc) {
+                    //     content(el).replaceWith(`<img src="${imgSrc}">`);
+                    //     return;
+                    // }
+
+                    // 处理图片
+                    const img = $el.find('img');
+                    if (img) {
+                        const originalSrc = img.attr('data-original');
+                        const fallbackSrc = img.attr('src');
+                        const imgSrc = originalSrc || fallbackSrc;
+                        if (imgSrc) {
+                            content(el).replaceWith(`<img src="${imgSrc}">`);
+                            return;
+                        }
+                    }
+                    // 既无视频也无图片，保留原始内容
+                    content(el).replaceWith($el.html() || '');
                 });
 
                 item.author = content('.fl.black').first().text();
