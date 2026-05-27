@@ -132,6 +132,7 @@ async function handler(ctx) {
                 const content = load(detailResponse);
 
                 content('.ads, .tips').remove();
+                content('img[src^="images/"]').remove();
 
                 content('ignore_js_op').each((_, el) => {
                     const $el = content(el);
