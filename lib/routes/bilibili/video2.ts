@@ -8,7 +8,6 @@ import md5 from '@/utils/md5';
 import { parseDuration } from '@/utils/helpers';
 import logger from '@/utils/logger';
 
-import cache from './cache';
 import { getVideoUrl, renderUGCDescription } from './utils';
 
 const bvidTime = 1_589_990_400;
@@ -147,7 +146,8 @@ async function fetchVideoListFromArcList(uid: string): Promise<ArcListResponse> 
  * 使用自包含的 WBI 签名逻辑，不依赖 cache 中会触发 Playwright 的方法
  */
 async function fetchVideoListFromWbi(uid: string): Promise<VideoListData> {
-    const cookie = cache.getConfiguredCookie() || '';
+    const cache = await import('./cache');
+    const cookie = cache.default.getConfiguredCookie() || '';
     const [imgKey, subKey] = await getWbiKeys();
     const signedParams = signWbi({ mid: uid, pn: 1, ps: 30, order: 'pubdate', keyword: '', tid: 0 }, imgKey, subKey);
     const query = new URLSearchParams(Object.entries(signedParams).map(([k, v]) => [k, String(v)])).toString();
@@ -201,7 +201,7 @@ async function handler(ctx: Context) {
         items = await Promise.all(
             archives.map(async (v) => {
                 const pic = v.pic.replace('http://', 'https://');
-                const subtitles = isJsonFeed && !config.bilibili.excludeSubtitles && v.bvid ? await cache.getVideoSubtitleAttachment(v.bvid) : [];
+                const subtitles = isJsonFeed && !config.bilibili.excludeSubtitles && v.bvid ? (await import('./cache')).default.getVideoSubtitleAttachment(v.bvid) : [];
                 return {
                     title: v.title,
                     description: renderUGCDescription(embed, pic, '', String(v.aid), undefined, v.bvid),
@@ -234,7 +234,7 @@ async function handler(ctx: Context) {
 
         items = await Promise.all(
             videos.map(async (item) => {
-                const subtitles = isJsonFeed && !config.bilibili.excludeSubtitles && item.bvid ? await cache.getVideoSubtitleAttachment(item.bvid) : [];
+                const subtitles = isJsonFeed && !config.bilibili.excludeSubtitles && item.bvid ? (await import('./cache')).default.getVideoSubtitleAttachment(item.bvid) : [];
                 return {
                     title: item.title,
                     description: renderUGCDescription(embed, item.pic, item.description, String(item.aid), undefined, item.bvid),
