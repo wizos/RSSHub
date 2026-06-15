@@ -247,6 +247,8 @@ type ConfigEnvKeys =
     | 'YOUTUBE_VIDEO_EMBED_URL'
     | 'ZAIMANHUA_TOKEN'
     | 'ZHIHU_COOKIES'
+    | 'ZHIHU_REFRESH_TOKEN'
+    | 'ZHIHU_ACCESS_TOKEN'
     | 'ZODGAME_COOKIE'
     | 'ZSXQ_ACCESS_TOKEN'
     | 'SMZDM_COOKIE'
@@ -706,6 +708,10 @@ export type Config = {
     };
     zhihu: {
         cookies?: string;
+    };
+    zhihu2: {
+        accessToken?: string;
+        refreshToken?: string;
     };
     zodgame: {
         cookie?: string;
@@ -1214,6 +1220,10 @@ const calculateValue = () => {
         },
         zhihu: {
             cookies: envs.ZHIHU_COOKIES,
+        },
+        zhihu2: {
+            accessToken: envs.ZHIHU_ACCESS_TOKEN,
+            refreshToken: envs.ZHIHU_REFRESH_TOKEN,
         },
         zodgame: {
             cookie: envs.ZODGAME_COOKIE,
