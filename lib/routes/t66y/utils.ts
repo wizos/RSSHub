@@ -1,4 +1,4 @@
-import * as cheerio from 'cheerio';
+import { load } from 'cheerio';
 
 export const baseUrl = 'https://www.t66y.com';
 
@@ -17,7 +17,7 @@ const killRedircdn = (originUrl: string) => {
 };
 
 export const parseContent = (htmlString) => {
-    const $ = cheerio.load(htmlString);
+    const $ = load(htmlString);
 
     const content = $('div.tpc_content').eq(0);
     content.find('.t_like').remove();
