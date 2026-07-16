@@ -67,6 +67,7 @@ type ConfigEnvKeys =
     | 'DISABLE_NSFW'
     | 'SUFFIX'
     | 'TITLE_LENGTH_LIMIT'
+    | 'FORMAT'
     // OpenAI
     | 'OPENAI_API_KEY'
     | 'OPENAI_MODEL'
@@ -345,6 +346,7 @@ export type Config = {
     };
     suffix?: string;
     titleLengthLimit: number;
+    format: string;
     openai: {
         apiKey?: string;
         model?: string;
@@ -855,6 +857,7 @@ const calculateValue = () => {
         },
         suffix: envs.SUFFIX,
         titleLengthLimit: toInt(envs.TITLE_LENGTH_LIMIT, 150),
+        format: envs.FORMAT || 'rss',
         openai: {
             apiKey: envs.OPENAI_API_KEY,
             model: envs.OPENAI_MODEL || 'gpt-3.5-turbo-16k',
