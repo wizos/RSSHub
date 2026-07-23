@@ -10,6 +10,7 @@ export default defineConfig({
     clean: true,
     // copy: [{ from: 'lib/assets', to: 'dist' }],
     deps: {
+        alwaysBundle: ['sanitize-html'],
         onlyBundle: false,
     },
 });
