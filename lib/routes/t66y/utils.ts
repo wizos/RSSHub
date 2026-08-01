@@ -2,19 +2,13 @@ import { load } from 'cheerio';
 
 export const baseUrl = 'https://www.t66y.com';
 
-const killViidii = (originUrl: string) => {
-    if (!originUrl.includes('viidii')) {
-        return originUrl;
-    }
-    return originUrl.replace(/.*\?http/g, 'http').replace(/______/g, '.').replace(/&amp;z/, '').replace(/&z/, '').replace('return false', '');
-};
-
-const killRedircdn = (originUrl: string) => {
-    if (!originUrl.includes('redircdn')) {
-        return originUrl;
-    }
-    return originUrl.replace(/.*\?http/g, 'http').replace(/______/g, '.').replace(/&amp;z/, '').replace(/&z/, '').replace('return false', '');
-};
+const decodeRedirectUrl = (originUrl: string) =>
+    originUrl
+        .replaceAll(/.*\?http/g, 'http')
+        .replaceAll(/______/g, '.')
+        .replace(/&amp;z/, '')
+        .replace(/&z/, '')
+        .replace('return false', '');
 
 export const parseContent = (htmlString) => {
     const $ = load(htmlString);
@@ -22,18 +16,6 @@ export const parseContent = (htmlString) => {
     const content = $('div.tpc_content').eq(0);
     content.find('.t_like').remove();
 
-    // Handle video
-    // const video = $('a:nth-of-type(2)');
-    // if (video) {
-    //     const videoScript = video.attr('onclick');
-    //     const regVideo = /https?:\/\/.*'/;
-    //     const videoRes = regVideo.exec(videoScript);
-    //     if (videoRes && videoRes.length !== 0) {
-    //         let link = videoRes[0];
-    //         link = link.slice(0, -1);
-    //         $('iframe').attr('src', link);
-    //     }
-    // }
     // Handle img tag
     content.find('img').each((_, ele) => {
         const $ele = $(ele);
@@ -58,10 +40,13 @@ export const parseContent = (htmlString) => {
     content.find('a').each((_, ele) => {
         const $ele = $(ele);
         const href = $ele.attr('href');
-        if (href?.includes('viidii')) {
-            $ele.attr('href', killViidii(href));
-        } else if (href?.includes('redircdn')) {
-            $ele.attr('href', killRedircdn(href));
+        if (href?.includes('viidii') || href?.includes('redircdn')) {
+            const decodedUrl = decodeRedirectUrl(href);
+            if (decodedUrl.startsWith('https://sendvid.com/embed/')) {
+                $ele.replaceWith($('<iframe></iframe>').attr({ src: decodedUrl, frameborder: '0', allowfullscreen: '' }));
+            } else {
+                $ele.attr('href', decodedUrl);
+            }
         }
     });
 
