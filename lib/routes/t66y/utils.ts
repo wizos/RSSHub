@@ -5,7 +5,7 @@ export const baseUrl = 'https://www.t66y.com';
 const decodeRedirectUrl = (originUrl: string) =>
     originUrl
         .replaceAll(/.*\?http/g, 'http')
-        .replaceAll(/______/g, '.')
+        .replaceAll('______', '.')
         .replace(/&amp;z/, '')
         .replace(/&z/, '')
         .replace('return false', '');
