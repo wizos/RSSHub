@@ -92,9 +92,9 @@ async function handler(ctx) {
 
             return {
                 title: `${catalog} ${a.text()}`,
-                link: `${baseUrl}/${a.attr('href')}`,
+                link: new URL(a.attr('href')!, baseUrl).href,
                 author: td3.find('a').text(),
-                pubDate: tsStr && !Number.isNaN(Number(tsStr)) ? timezone(parseDate(tsStr, 'X'), +8) : undefined,
+                pubDate: tsStr && !Number.isNaN(Number(tsStr)) ? timezone(parseDate(tsStr, 'X'), 8) : undefined,
             };
         })
         .filter((item) => item.title && !EXCLUDE_TITLE.test(item.title));
@@ -111,7 +111,7 @@ async function handler(ctx) {
                 if (!item.pubDate) {
                     const tsAttr = $detail('div.tipad span[data-timestamp]').first().attr('data-timestamp');
                     if (tsAttr && !Number.isNaN(Number(tsAttr))) {
-                        item.pubDate = timezone(parseDate(tsAttr, 'X'), +8);
+                        item.pubDate = timezone(parseDate(tsAttr, 'X'), 8);
                     }
                 }
 
