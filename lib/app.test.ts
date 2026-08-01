@@ -1,9 +1,11 @@
+import { load } from 'cheerio';
 import Parser from 'rss-parser';
 import undici from 'undici';
 import { describe, expect, it, vi } from 'vitest';
 
 import app from '@/app';
 import { config } from '@/config';
+import { parseContent } from '@/routes/t66y/utils';
 
 describe('index', () => {
     it('exports app entrypoint', () => {
@@ -25,6 +27,17 @@ describe('request-rewriter', () => {
         // headers
         const headers: Headers = fetchSpy.mock.lastCall?.[0].headers;
         expect(headers.get('user-agent')).toMatch(/Chrome/);
+    });
+});
+
+describe('t66y content parser', () => {
+    it('converts wrapped Sendvid embeds to iframes', () => {
+        const html = '<div class="tpc_content"><a href="https://2023.redircdn.com/?https://sendvid______com/embed/hgwxh2nz&amp;z">[點擊這里打開新視窗]</a></div>';
+        const $ = load(parseContent(html) ?? '');
+
+        expect($('iframe').attr('src')).toBe('https://sendvid.com/embed/hgwxh2nz');
+        expect($('iframe').attr('allowfullscreen')).toBe('');
+        expect($('a')).toHaveLength(0);
     });
 });
 
