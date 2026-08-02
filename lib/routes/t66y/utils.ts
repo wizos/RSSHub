@@ -1,3 +1,4 @@
+import type { CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
 
 export const baseUrl = 'https://www.t66y.com';
@@ -10,8 +11,8 @@ const decodeRedirectUrl = (originUrl: string) =>
         .replace(/&z/, '')
         .replace('return false', '');
 
-export const parseContent = (htmlString) => {
-    const $ = load(htmlString);
+export const parseContent = (html: string | CheerioAPI) => {
+    const $ = typeof html === 'string' ? load(html) : html;
 
     const content = $('div.tpc_content').eq(0);
     content.find('.t_like').remove();

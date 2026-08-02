@@ -104,8 +104,8 @@ async function handler(ctx) {
             cache.tryGet(item.link, async () => {
                 const { data: response } = await got(item.link);
 
-                const $detail = cheerio.load(response);
-                item.description = parseContent(response);
+                const $detail = load(response);
+                item.description = parseContent($detail);
 
                 // If pubDate was not available from the list page, get it from the detail page
                 if (!item.pubDate) {
